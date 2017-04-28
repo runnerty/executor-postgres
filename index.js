@@ -2,9 +2,7 @@
 
 var pg = require('pg'); //PostgreSQL
 var csv = require("fast-csv");
-//var loadSQLFile = require("../../libs/utils.js").loadSQLFile;
 var loadSQLFile = global.libUtils.loadSQLFile;
-
 var Execution = global.ExecutionClass;
 
 class postgresExecutor extends Execution {
@@ -12,7 +10,7 @@ class postgresExecutor extends Execution {
     super(process);
   }
 
-  exec() {
+  exec(params) {
     var _this = this;
     var endOptions = {end: 'end'};
 
@@ -55,7 +53,7 @@ class postgresExecutor extends Execution {
       });
     }
 
-    function evaluateResults(results, resolve, reject) {
+    function evaluateResults(results) {
 
       if (results.rows && results.rows.length > 0) {
         endOptions.end = 'end';
@@ -83,64 +81,52 @@ class postgresExecutor extends Execution {
           endOptions.execute_db_warningCount = '';
           endOptions.execute_db_message = '';
         }
-        _this.end(endOptions, resolve, reject);
+        _this.end(endOptions);
       }
     }
 
-    return new Promise(function (resolve, reject) {
-      _this.getValues()
+    if (params.command) {
+      executeQuery(params)
         .then((res) => {
-
-          if (res.command) {
-            executeQuery(res)
+          evaluateResults(res);
+        })
+        .catch(function (err) {
+          var endOptions = {
+            end: 'error',
+            messageLog: `executePostgre executeQuery: ${err}`,
+            execute_err_return: `executePostgre executeQuery: ${err}`
+          };
+          _this.end(endOptions);
+        });
+    } else {
+      if (params.command_file) {
+        loadSQLFile(params.command_file)
+          .then((fileContent) => {
+            params.command = fileContent;
+            executeQuery(params)
               .then((res) => {
-                evaluateResults(res, resolve, reject);
+                evaluateResults(res);
               })
               .catch(function (err) {
-                var endOptions = {
-                  end: 'error',
-                  messageLog: `executePostgre executeQuery: ${err}`,
-                  execute_err_return: `executePostgre executeQuery: ${err}`
-                };
-                _this.end(endOptions, resolve, reject);
+                endOptions.end = 'error';
+                endOptions.messageLog = `executePostgre executeQuery from file: ${err}`;
+                endOptions.execute_err_return = `executePostgre executeQuery from file: ${err}`;
+                _this.end(endOptions);
               });
-          } else {
-            if (res.command_file) {
-              loadSQLFile(res.command_file)
-                .then((fileContent) => {
-                  res.command = fileContent;
-                  executeQuery(res)
-                    .then((res) => {
-                      evaluateResults(res, resolve, reject);
-                    })
-                    .catch(function (err) {
-                      endOptions.end = 'error';
-                      endOptions.messageLog = `executePostgre executeQuery from file: ${err}`;
-                      endOptions.execute_err_return = `executePostgre executeQuery from file: ${err}`;
-                      _this.end(endOptions, resolve, reject);
-                    });
-                })
-                .catch(function (err) {
-                  endOptions.end = 'error';
-                  endOptions.messageLog = `executePostgre loadSQLFile: ${err}`;
-                  endOptions.execute_err_return = `executePostgre loadSQLFile: ${err}`;
-                  _this.end(endOptions, resolve, reject);
-                });
-            } else {
-              endOptions.end = 'error';
-              endOptions.messageLog = `executePostgre dont set command or command_file`;
-              endOptions.execute_err_return = `executePostgre dont set command or command_file`;
-              _this.end(endOptions, resolve, reject);
-            }
-          }
-        })
-        .catch((err) => {
-          endOptions.end = 'error';
-          endOptions.messageLog = `postgresExecutor Error getValues: ${err}`;
-          endOptions.execute_err_return = `postgresExecutor Error getValues: ${err}`;
-          _this.end(endOptions, resolve, reject);
-        });
-    });
+          })
+          .catch(function (err) {
+            endOptions.end = 'error';
+            endOptions.messageLog = `executePostgre loadSQLFile: ${err}`;
+            endOptions.execute_err_return = `executePostgre loadSQLFile: ${err}`;
+            _this.end(endOptions);
+          });
+      } else {
+        endOptions.end = 'error';
+        endOptions.messageLog = `executePostgre dont set command or command_file`;
+        endOptions.execute_err_return = `executePostgre dont set command or command_file`;
+        _this.end(endOptions);
+      }
+    }
   }
 }
 
