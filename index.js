@@ -1,6 +1,6 @@
 "use strict";
 
-var pg = require('pg'); //PostgreSQL
+var pg = require("pg"); //PostgreSQL
 var csv = require("fast-csv");
 var loadSQLFile = global.libUtils.loadSQLFile;
 var Execution = global.ExecutionClass;
@@ -12,7 +12,7 @@ class postgresExecutor extends Execution {
 
   exec(params) {
     var _this = this;
-    var endOptions = {end: 'end'};
+    var endOptions = {end: "end"};
 
     function executeQuery(values) {
       return new Promise(async function (resolve, reject) {
@@ -21,7 +21,7 @@ class postgresExecutor extends Execution {
           useArgsValues: true,
           useProcessValues: true,
           useGlobalValues: true,
-          altValueReplace: 'null'
+          altValueReplace: "null"
         };
 
         var _query = await _this.paramsReplace(values.command, options);
@@ -36,13 +36,13 @@ class postgresExecutor extends Execution {
 
         client.connect(function (err) {
           if (err) {
-            _this.logger.log('error', `Could not connect to Postgre: ` + err);
+            _this.logger.log("error", "Could not connect to Postgre: " + err);
             reject(err);
           } else {
             client.query(_query, null, function (err, results) {
               client.end();
               if (err) {
-                _this.logger.log('error', `Error query Postgre (${_query}): ` + err);
+                _this.logger.log("error", `Error query Postgre (${_query}): ` + err);
                 reject(`Error query Postgre (${_query}): ` + err);
               } else {
                 resolve(results);
@@ -56,12 +56,12 @@ class postgresExecutor extends Execution {
     function evaluateResults(results) {
 
       if (results.rows && results.rows.length > 0) {
-        endOptions.end = 'end';
+        endOptions.end = "end";
         endOptions.execute_db_results = JSON.stringify(results.rows);
         endOptions.execute_db_results_object = results.rows;
         csv.writeToString(results.rows, {headers: true}, function (err, data) {
           if (err) {
-            _this.logger.log('error', `Generating csv output for execute_db_results_csv for ${_this.processId}(${_this.processUId}): ${err}. Results: ${results}`);
+            _this.logger.log("error", `Generating csv output for execute_db_results_csv for ${_this.processId}(${_this.processUId}): ${err}. Results: ${results}`);
           } else {
             endOptions.execute_db_results_csv = data;
           }
@@ -71,15 +71,15 @@ class postgresExecutor extends Execution {
       } else {
 
         if (results instanceof Object) {
-          endOptions.execute_db_results = '';
-          endOptions.execute_db_results_csv = '';
+          endOptions.execute_db_results = "";
+          endOptions.execute_db_results_csv = "";
           endOptions.execute_db_results_object = [];
           endOptions.execute_db_fieldCount = results.rowCount;
-          endOptions.execute_db_affectedRows = '';
-          endOptions.execute_db_changedRows = '';
+          endOptions.execute_db_affectedRows = "";
+          endOptions.execute_db_changedRows = "";
           endOptions.execute_db_insertId = results.oid;
-          endOptions.execute_db_warningCount = '';
-          endOptions.execute_db_message = '';
+          endOptions.execute_db_warningCount = "";
+          endOptions.execute_db_message = "";
         }
         _this.end(endOptions);
       }
@@ -92,7 +92,7 @@ class postgresExecutor extends Execution {
         })
         .catch(function (err) {
           var endOptions = {
-            end: 'error',
+            end: "error",
             messageLog: `executePostgre executeQuery: ${err}`,
             execute_err_return: `executePostgre executeQuery: ${err}`
           };
@@ -108,22 +108,22 @@ class postgresExecutor extends Execution {
                 evaluateResults(res);
               })
               .catch(function (err) {
-                endOptions.end = 'error';
+                endOptions.end = "error";
                 endOptions.messageLog = `executePostgre executeQuery from file: ${err}`;
                 endOptions.execute_err_return = `executePostgre executeQuery from file: ${err}`;
                 _this.end(endOptions);
               });
           })
           .catch(function (err) {
-            endOptions.end = 'error';
+            endOptions.end = "error";
             endOptions.messageLog = `executePostgre loadSQLFile: ${err}`;
             endOptions.execute_err_return = `executePostgre loadSQLFile: ${err}`;
             _this.end(endOptions);
           });
       } else {
-        endOptions.end = 'error';
-        endOptions.messageLog = `executePostgre dont set command or command_file`;
-        endOptions.execute_err_return = `executePostgre dont set command or command_file`;
+        endOptions.end = "error";
+        endOptions.messageLog = "executePostgre dont set command or command_file";
+        endOptions.execute_err_return = "executePostgre dont set command or command_file";
         _this.end(endOptions);
       }
     }
