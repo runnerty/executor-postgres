@@ -65,7 +65,7 @@ class postgresExecutor extends Execution {
           } else {
             endOptions.execute_db_results_csv = data;
           }
-          _this.end(endOptions, resolve, reject);
+          _this.end(endOptions);
         });
 
       } else {
