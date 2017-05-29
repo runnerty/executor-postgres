@@ -4,7 +4,7 @@
 ```json
 {
   "id": "postgres_default",
-  "type": "runnerty-executor-postgres",
+  "type": "@runnerty/executor-postgres",
   "user": "postgresusr",
   "password": "postgrespass",
   "host":"myhost.com",
