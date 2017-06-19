@@ -24,7 +24,8 @@
           "required": ["id","command"],
           "properties":{
             "id": {"type": "string"},
-            "command": {"type": "string"}
+            "command": {"type": "string"},
+            "args": {"type": "object"}
           }
         },
         {
@@ -32,7 +33,8 @@
           "required": ["id","command_file"],
           "properties":{
             "id": {"type": "string"},
-            "command_file": {"type": "string"}
+            "command_file": {"type": "string"},
+            "args": {"type": "object"}
           }
         }
       ]
