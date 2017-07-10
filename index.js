@@ -43,6 +43,7 @@ class postgresExecutor extends Execution {
               client.end();
               if (err) {
                 _this.logger.log("error", `Error query Postgre (${_query}): ` + err);
+
                 reject(`Error query Postgre (${_query}): ` + err);
               } else {
                 resolve(results);
@@ -54,32 +55,36 @@ class postgresExecutor extends Execution {
     }
 
     function evaluateResults(results) {
-
+      endOptions.end = "end";
       if (results.rows && results.rows.length > 0) {
-        endOptions.end = "end";
-        endOptions.execute_db_results = JSON.stringify(results.rows);
-        endOptions.execute_db_results_object = results.rows;
-        csv.writeToString(results.rows, {headers: true}, function (err, data) {
-          if (err) {
-            _this.logger.log("error", `Generating csv output for execute_db_results_csv for ${_this.processId}(${_this.processUId}): ${err}. Results: ${results}`);
-          } else {
-            endOptions.execute_db_results_csv = data;
+        endOptions.extra_output = {};
+        endOptions.data_output = results.rows;
+        endOptions.extra_output.db_countRows = results.rows.length;
+        endOptions.extra_output.db_firstRow = JSON.stringify(results.rows[0]);
+        if (results.rows[0] instanceof Object) {
+          let keys = Object.keys(results.rows[0]);
+          let keysLength = keys.length;
+          while (keysLength--) {
+            let key = keys[keysLength];
+            endOptions.extra_output["db_firstRow_"+key] = results.rows[0][key];
           }
-          _this.end(endOptions);
-        });
+        }
+
+        if(params.csvFileExport){
+          csv.writeToPath(params.csvFileExport, results.rows, {headers: true}, function (err, data) {
+            if (err) {
+              _this.logger.log("error", `Generating csv output for execute_db_results_csv for ${_this.processId}(${_this.processUId}): ${err}. Results: ${results}`);
+            }
+          });
+        }
+        _this.end(endOptions);
 
       } else {
 
         if (results instanceof Object) {
-          endOptions.execute_db_results = "";
-          endOptions.execute_db_results_csv = "";
-          endOptions.execute_db_results_object = [];
-          endOptions.execute_db_fieldCount = results.rowCount;
-          endOptions.execute_db_affectedRows = "";
-          endOptions.execute_db_changedRows = "";
-          endOptions.execute_db_insertId = results.oid;
-          endOptions.execute_db_warningCount = "";
-          endOptions.execute_db_message = "";
+          endOptions.extra_output = {};
+          endOptions.extra_output.db_fieldCount = results.rowCount;
+          endOptions.extra_output.db_insertId = results.oid;
         }
         _this.end(endOptions);
       }
@@ -94,7 +99,7 @@ class postgresExecutor extends Execution {
           var endOptions = {
             end: "error",
             messageLog: `executePostgre executeQuery: ${err}`,
-            execute_err_return: `executePostgre executeQuery: ${err}`
+            err_output: `executePostgre executeQuery: ${err}`
           };
           _this.end(endOptions);
         });
@@ -110,20 +115,20 @@ class postgresExecutor extends Execution {
               .catch(function (err) {
                 endOptions.end = "error";
                 endOptions.messageLog = `executePostgre executeQuery from file: ${err}`;
-                endOptions.execute_err_return = `executePostgre executeQuery from file: ${err}`;
+                endOptions.err_output = `executePostgre executeQuery from file: ${err}`;
                 _this.end(endOptions);
               });
           })
           .catch(function (err) {
             endOptions.end = "error";
             endOptions.messageLog = `executePostgre loadSQLFile: ${err}`;
-            endOptions.execute_err_return = `executePostgre loadSQLFile: ${err}`;
+            endOptions.err_output = `executePostgre loadSQLFile: ${err}`;
             _this.end(endOptions);
           });
       } else {
         endOptions.end = "error";
         endOptions.messageLog = "executePostgre dont set command or command_file";
-        endOptions.execute_err_return = "executePostgre dont set command or command_file";
+        endOptions.err_output = "executePostgre dont set command or command_file";
         _this.end(endOptions);
       }
     }
