@@ -1,6 +1,6 @@
 {
   "name": "@runnerty/executor-postgres",
-  "version": "0.0.4",
+  "version": "1.0.0",
   "description": "Runnerty module: Postgres executor",
   "author": "Coderty",
   "license": "MIT",
