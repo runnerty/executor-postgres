@@ -20,6 +20,6 @@
   "homepage": "https://github.com/Coderty/runnerty-executor-postgres#readme",
   "dependencies": {
     "fast-csv": "^2.4.0",
-    "pg": "^6.4.0"
+    "pg": "^7.1.0"
   }
 }
