@@ -1,13 +1,13 @@
 {
   "name": "@runnerty/executor-postgres",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Runnerty module: Postgres executor",
   "author": "Coderty",
   "license": "MIT",
   "main": "index.js",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Coderty/runnerty-executor-postgres.git"
+    "url": "git+https://github.com/runnerty/executor-postgres.git"
   },
   "keywords": [
     "runnerty",
@@ -15,9 +15,9 @@
     "postgres"
   ],
   "bugs": {
-    "url": "https://github.com/Coderty/runnerty-executor-postgres/issues"
+    "url": "https://github.com/runnerty/executor-postgres/issues"
   },
-  "homepage": "https://github.com/Coderty/runnerty-executor-postgres#readme",
+  "homepage": "https://github.com/runnerty/executor-postgres#readme",
   "dependencies": {
     "fast-csv": "^2.4.0",
     "pg": "^7.1.0"
