@@ -19,7 +19,7 @@
   },
   "homepage": "https://github.com/runnerty/executor-postgres#readme",
   "dependencies": {
-    "fast-csv": "^2.4.0",
-    "pg": "^7.1.0"
+    "fast-csv": "^2.4.1",
+    "pg": "^7.4.0"
   }
 }
