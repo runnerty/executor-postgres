@@ -221,15 +221,6 @@ For file upload you must indicate the path of the file to be loaded in the `loca
 - `PROCESS_EXEC_DB_FIRSTROW`: postgres query first row data.
 - `PROCESS_EXEC_DB_FIRSTROW_[FILED_NAME]`: postgres first row field data.
 
-#### Operation output
-
-- `PROCESS_EXEC_DB_FIELDCOUNT`: postgres field count.
-- `PROCESS_EXEC_DB_AFFECTEDROWS`: postgres affected rows count.
-- `PROCESS_EXEC_DB_CHANGEDROWS`: postgres changed rows count.
-- `PROCESS_EXEC_DB_INSERTID`: postgres insert ID.
-- `PROCESS_EXEC_DB_WARNINGCOUNT`: postgres warning count.
-- `PROCESS_EXEC_DB_MESSAGE`: postgres message.
-
 [runnerty]: http://www.runnerty.io
 [downloads-image]: https://img.shields.io/npm/dm/@runnerty/executor-postgres.svg
 [npm-url]: https://www.npmjs.com/package/@runnerty/executor-postgres
