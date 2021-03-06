@@ -1,0 +1,13 @@
+{
+  "executors": [
+    {
+      "id": "postgres_default",
+      "type": "@runnerty-executor-postgres",
+      "user": "postgres",
+      "password": "postgrespass",
+      "database": "postgres",
+      "host": "localhost",
+      "port": "5432"
+    }
+  ]
+}

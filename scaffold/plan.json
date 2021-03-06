@@ -1,0 +1,109 @@
+{
+  "$schema": "https://raw.githubusercontent.com/runnerty/schemas/master/schemas/3.1/plan.json",
+  "chains": [
+    {
+      "id": "CHAIN_POSTGRES_SAMPLES",
+      "name": "POSTGRES module example chain",
+      "defaults_processes": {
+        "notifications": {
+          "on_start": [
+            {
+              "id": "console_default",
+              "message": "@GETDATE('YYYY-MM-DD HH:mm:ss') START: PROCESS @GV(PROCESS_ID)"
+            }
+          ],
+          "on_fail": [
+            {
+              "id": "console_default",
+              "message": "@GETDATE('YYYY-MM-DD HH:mm:ss') ERROR: PROCESS @GV(PROCESS_ID): @GV(PROCESS_EXEC_ERR_OUTPUT)",
+              "mode": "error"
+            }
+          ],
+          "on_end": [
+            {
+              "id": "console_default",
+              "message": "@GETDATE('YYYY-MM-DD HH:mm:ss') END: PROCESS @GV(PROCESS_ID) - ROWCOUNT: @GV(PROCESS_EXEC_DB_COUNTROWS)\nFIRSTROW_ID:@GV(PROCESS_EXEC_DB_FIRSTROW_ID)\nDATA_OUTPUT:\n@GV(PROCESS_EXEC_DATA_OUTPUT)"
+            }
+          ]
+        }
+      },
+      "processes": [
+        {
+          "id": "POSTGRES_SIMPLE",
+          "name": "POSTGRES COMMAND SAMPLE",
+          "exec": {
+            "id": "postgres_default",
+            "command": "SELECT * FROM generate_series(1,10)"
+          }
+        },
+        {
+          "id": "POSTGRES_SIMPLE",
+          "name": "POSTGRES COMMAND SAMPLE",
+          "exec": {
+            "id": "postgres_default",
+            "command": "INSERT INTO persons (first_name, last_name, email) VALUES ('Moka', 'Dog', 'moka@runnerty.io') RETURNING id;"
+          }
+        },
+        {
+          "id": "POSTGRES_FILE",
+          "name": "POSTGRES COMMAND FILE SAMPLE",
+          "exec": {
+            "id": "postgres_default",
+            "command_file": "./sql/test.sql"
+          }
+        },
+        {
+          "id": "POSTGRES_OUTPUT_JSON",
+          "name": "POSTGRES QUERY TO JSON",
+          "exec": {
+            "id": "postgres_default",
+            "command": "SELECT * FROM persons",
+            "jsonFileExport": "./PERSONS.json"
+          }
+        },
+        {
+          "id": "POSTGRES_OUTPUT_XLSX",
+          "name": "POSTGRES QUERY TO XLSX",
+          "exec": {
+            "id": "postgres_default",
+            "command": "SELECT * FROM persons",
+            "xlsxFileExport": "./PERSONS.xlsx",
+            "xlsxAuthorName": "Runnerty",
+            "xlsxSheetName": "MySheetSample"
+          }
+        },
+        {
+          "id": "POSTGRES_OUTPUT_CSV",
+          "name": "POSTGRES QUERY TO CSV",
+          "exec": {
+            "id": "postgres_default",
+            "command": "SELECT * FROM persons",
+            "csvFileExport": "./PERSONS.csv",
+            "csvOptions": {
+              "delimiter": ";",
+              "quote": "\""
+            }
+          }
+        },
+        {
+          "id": "POSTGRES_PLAIN_FILES",
+          "name": "POSTGRES COPY TO PLAIN FILE",
+          "exec": {
+            "id": "postgres_default",
+            "command": "COPY persons TO STDOUT DELIMITER ';' CSV HEADER QUOTE '\"';",
+            "fileExport": "./PERSONS.csv"
+          }
+        },
+        {
+          "id": "POSTGRES_INPUT_FILE",
+          "name": "POSTGRES COPY FROM",
+          "exec": {
+            "id": "postgres_default",
+            "command": "COPY persons (first_name,last_name,email) FROM STDIN DELIMITER ';' CSV HEADER QUOTE '\"';",
+            "localInFile": "./PERSONS_TO_LOAD.csv"
+          }
+        }
+      ]
+    }
+  ]
+}
