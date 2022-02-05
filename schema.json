@@ -46,13 +46,13 @@
           "type": "boolean"
         },
         "query_timeout": {
-          "type": ["boolean","number"]
+          "type": ["boolean", "number"]
         },
         "statement_timeout": {
-          "type": ["boolean","number"]
+          "type": ["boolean", "number"]
         },
         "idle_in_transaction_session_timeout": {
-          "type": ["boolean","number"]
+          "type": ["boolean", "number"]
         },
         "application_name": {
           "type": "string"
