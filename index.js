@@ -296,7 +296,7 @@ class postgresExecutor extends Executor {
         this.error(error, client);
       });
       resStream.on('finish', () => {
-        fileStreamReader.end();
+        fileStreamReader.close();
         this._end(this.endOptions);
         client.release();
       });
