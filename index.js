@@ -107,7 +107,26 @@ class postgresExecutor extends Executor {
   async executeQuery(client, query) {
     try {
       const results = await client.query(query);
-      this.prepareEndOptions(results.rows[0], results.rowCount, results.rows);
+      var rows = [];
+      var rowCount = 0;
+      if (Array.isArray(results)) {
+        results.forEach(result => {
+          if (result.rows.length) {
+            rows.push(...result.rows);
+          } else {
+            rows.push(result);
+          }
+          rowCount += result.rowCount || 0;
+        })
+      } else {
+        if (results.rows.length) {
+          rows.push(...results.rows);
+        } else {
+          rows.push(results);
+        }
+        rowCount = results.rowCount;
+      }
+      this.prepareEndOptions(rows[0], rowCount, rows);
       this._end(this.endOptions);
       client.release();
     } catch (err) {
